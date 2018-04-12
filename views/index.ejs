@@ -1,0 +1,118 @@
+<% layout('layout') %>
+<div class="row">
+    <div class="col-md-3">
+        <a href="/public/addBlog" class="btn btn-success">Add blog</a>
+    </div>
+    <div class="col-md-3">
+        <a id="all-blogs" href="" class="btn btn-success">All blog</a><br>
+    </div>
+    <div class="col-md-3">
+        <a href="" id="one-blog" class="btn btn-warning">One blog</a>
+    </div>
+    <div class="col-md-3">
+        <a  href="" id="updated-blog" class="btn btn-warning">Updated blog</a>
+        <input class="form-control" id="body" type="text" placeholder="body">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <a href="" id="count" class="btn btn-success">Count blog</a>
+    </div>
+    <div class="col-md-3">
+        <a href="" id="delete-blog" class="btn btn-danger">Delete blog</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <input class="form-control" id="blog-query" type="text" placeholder="query string">
+    </div>
+</div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <pre>
+            <code>
+                <div class="resp"></div>
+            </code>
+        </pre>
+    </div>
+</div>
+<script>
+    $('#all-blogs').click(function(e) {
+        e.preventDefault();
+        $.ajax({
+            method: 'GET',
+            url: `/api/blog?${$('#blog-query').val()}`,
+            success: function(response) {
+                //let msg = JSON.parse(response);
+                $('.resp').html(JSON.stringify(response, undefined, 2));
+            }
+        })
+    })
+
+    $('#count').click(function(e) {
+        e.preventDefault();
+        $.ajax({
+            method: 'GET',
+            url: `/api/blog/count?${$('#blog-query').val()}`,
+            success: function(response) {
+                //let msg = JSON.parse(response);
+                $('.resp').html(JSON.stringify(response, undefined, 2));
+            }
+        })
+    })
+
+    $('#delete-blog').click(function(e) {
+        e.preventDefault();
+        if($('#blog-query').val() === '') {
+            $('.resp').html('Please enter id at query string');
+        } else {
+            $.ajax({
+                method: 'DELETE',
+                url: `/api/blog/${$('#blog-query').val()}`,
+                success: function(response) {
+                    //let msg = JSON.parse(response);
+                    $('.resp').html(JSON.stringify(response, undefined, 2));
+                }
+            })
+        }
+    })
+
+    $('#updated-blog').click(function(e) {
+        e.preventDefault();
+        if($('#blog-query').val() === '') {
+            $('.resp').html('Please enter id at query string');
+        } else {
+            $.ajax({
+                method: 'PUT',
+                url: `/api/blog/${$('#blog-query').val()}`,
+                data: {
+                    body: $('#body').val()
+                },
+                success: function(response) {
+                    //let msg = JSON.parse(response);
+                    $('.resp').html(JSON.stringify(response, undefined, 2));
+                }
+            })
+        }
+    })
+
+    $('#one-blog').click(function(e) {
+        e.preventDefault();
+        if($('#blog-query').val() === '') {
+            $('.resp').html('Please enter id at query string');
+        } else {
+            $.ajax({
+                method: 'GET',
+                url: `/api/blog/${$('#blog-query').val()}`,
+                data: {
+                    body: $('#body').val()
+                },
+                success: function(response) {
+                    $('.resp').html(JSON.stringify(response, undefined, 2));
+                }
+            })
+        }
+    })
+
+</script>
