@@ -6,7 +6,9 @@ module.exports = {
 
    getCount: (req, res) => {
       let query = req.query;
-      let author = query.where && query.where['author'] ? query.where['author'] : {$exists: true}
+      let author = query.where && query.where['author'] ? query.where['author'] : {
+         $exists: true
+      }
       Blog.count({
          author,
          status: {
@@ -28,11 +30,13 @@ module.exports = {
 
    getAll: (req, res) => {
       let query = req.query;
-      
+
       let limit = query.limit ? parseInt(query.limit, 10) : 10;
       let offset = query.offset ? parseInt(query.offset, 10) : 0;
       let order = query.order ? query.order : {};
-      let author = query.where && query.where['author'] ? query.where['author'] : {$exists: true}
+      let author = query.where && query.where['author'] ? query.where['author'] : {
+         $exists: true
+      }
       Blog.find({
             author: author,
             status: {
@@ -62,20 +66,26 @@ module.exports = {
          let user = req.session.passport.user;
          req.body.author = user._id;
          req.body.authorName = user.username ? user.username : 'Anonimus';
-         req.body.status = 'active';
+         req.body.status = 'new';
 
-         let blog = new Blog(req.body);
-         blog.save((err, blog) => {
-            if (err) {
-               return res.status(500).json({
-                  status: false,
-                  message: 'Server error'
+         Blog.count({
+            author: req.body.author
+         }).then(count => {
+            count++;
+            req.body.label = `${req.body.title}-${count}`
+            let blog = new Blog(req.body);
+            blog.save((err, blog) => {
+               if (err) {
+                  return res.status(500).json({
+                     status: false,
+                     message: 'Server error'
+                  })
+               }
+               res.status(200).json({
+                  status: true,
+                  message: 'Blog create',
+                  data: blog
                })
-            }
-            res.status(200).json({
-               status: true,
-               message: 'Blog create',
-               data: blog
             })
          })
       } else {
@@ -93,7 +103,7 @@ module.exports = {
             $not: /deleted/gi
          }
       }).then(blog => {
-         if(!blog) {
+         if (!blog) {
             return res.status(404).json({
                status: false,
                message: 'Not found'
@@ -117,13 +127,13 @@ module.exports = {
       if (req.isAuthenticated()) {
          let user = req.session.passport.user;
          req.body.updatedAt = Date.now();
-         console.log(req.body)
+         req.body.status = 'active';
          Blog.findOne({
             _id: req.params.id
          }).then(blog => {
-            if(blog.author.equals(user._id) || user.role === 'admin') {
+            if (blog.author.equals(user._id) || user.role === 'admin') {
                blog.update(req.body, (err, done) => {
-                  if(done.ok === 1) {
+                  if (done.ok === 1) {
                      Blog.findOne({
                         _id: req.params.id
                      }).then(blog => {
@@ -157,11 +167,11 @@ module.exports = {
          Blog.findOne({
             _id: req.params.id
          }).then(blog => {
-            if(blog.author.equals(user._id) || user.role === 'admin') {
+            if (blog.author.equals(user._id) || user.role === 'admin') {
                blog.update({
                   status: 'deleted'
                }, (err, done) => {
-                  if(done.ok === 1) {
+                  if (done.ok === 1) {
                      Blog.findOne({
                         _id: req.params.id
                      }).then(blog => {

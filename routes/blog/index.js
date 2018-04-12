@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const authenticate = require("../../middleware/authenticate");
 const blogController = require('../../controllers/blogController');
 
 router.get('', blogController.getAll);

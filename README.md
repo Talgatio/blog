@@ -2,7 +2,8 @@
 
 It is necessary to take several steps to start the application
 
-  - Run MongoDB at yours local server
+  - Run MongoDB
+  - Run Redis
    ```sh
 $ npm install
 $ node app.js
