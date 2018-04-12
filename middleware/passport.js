@@ -43,12 +43,11 @@ module.exports = function (passport) {
             });
          }
 
-         user.save(function (err, user) {
-            done(null, user, {
-               status: true,
-               message: "Login success."
-            });
+         done(null, user, {
+            status: true,
+            message: "Login success."
          });
+
       });
    }));
 
